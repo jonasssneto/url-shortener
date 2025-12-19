@@ -27,6 +27,7 @@ func New(slug, originalURL string, expiredAt *time.Time) (*URL, error) {
 		ID:          uuid.New(),
 		Slug:        slug,
 		OriginalURL: originalURL,
+		ExpiredAt:   expiredAt,
 		CreatedAt:   time.Now().Unix(),
 		UpdatedAt:   time.Now().Unix(),
 	}, nil
