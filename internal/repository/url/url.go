@@ -2,32 +2,32 @@ package url_repository
 
 import (
 	"context"
+	"log"
 	"main/internal/domain/url"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type URLRepository struct {
-	db *pgxpool.Conn
+	db *pgxpool.Pool
 }
 
-func New(db *pgxpool.Conn) *URLRepository {
+func New(db *pgxpool.Pool) *URLRepository {
 	return &URLRepository{
 		db: db,
 	}
 }
 
 func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
-	query := `INSERT INTO urls (id, slug, original_url, created_at, expired_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $6)`
+	log.Println("Inserting URL into database:", url)
+	query := `INSERT INTO urls (id, slug, original_url, expired_at)
+          VALUES ($1, $2, $3, $4)`
 
 	_, err := u.db.Exec(ctx, query,
 		url.ID,
 		url.Slug,
 		url.OriginalURL,
-		url.CreatedAt,
 		url.ExpiredAt,
-		url.UpdatedAt,
 	)
 	if err != nil {
 		return err

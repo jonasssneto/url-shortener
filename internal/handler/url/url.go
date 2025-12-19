@@ -2,16 +2,17 @@ package url_handler
 
 import (
 	"encoding/json"
+	"log"
 	url_dto "main/internal/dto/url"
 	usecase "main/internal/use-case/url"
 	"net/http"
 )
 
 type URLHandler struct {
-	Usecase usecase.URLUseCase
+	Usecase *usecase.URLUseCase
 }
 
-func New(usecase usecase.URLUseCase) *URLHandler {
+func New(usecase *usecase.URLUseCase) *URLHandler {
 	return &URLHandler{
 		Usecase: usecase,
 	}
@@ -24,6 +25,8 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Received Create URL request: %+v\n", dto)
 
 	err = u.Usecase.Create(dto)
 	if err != nil {

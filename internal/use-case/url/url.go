@@ -9,10 +9,10 @@ import (
 )
 
 type URLUseCase struct {
-	Repository repo.URLRepository
+	Repository *repo.URLRepository
 }
 
-func New(repository repo.URLRepository) *URLUseCase {
+func New(repository *repo.URLRepository) *URLUseCase {
 	return &URLUseCase{
 		Repository: repository,
 	}
