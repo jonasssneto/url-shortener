@@ -4,7 +4,7 @@ import (
 	"context"
 	"main/internal/config"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
@@ -12,10 +12,10 @@ func main() {
 		panic(err)
 	}
 
-	conn, err := pgx.Connect(context.Background(), config.Env.Postgres.URI)
+	conn, err := pgxpool.New(context.Background(), config.Env.Postgres.URI)
 	if err != nil {
 		panic(err)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 }
