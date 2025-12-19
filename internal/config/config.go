@@ -9,6 +9,10 @@ import (
 )
 
 type Config struct {
+	Postgres struct {
+		URI string `envconfig:"POSTGRES_URI" default:"postgres://user:password@localhost:5432/dbname?sslmode=disable"`
+	}
+
 	Development bool
 }
 
