@@ -51,5 +51,9 @@ func validate(slug, originalURL string, expiredAt *time.Time) error {
 }
 
 func (u *URL) IsExpired() bool {
+	if u.ExpiredAt == nil {
+		return false
+	}
+
 	return time.Now().After(*u.ExpiredAt)
 }
