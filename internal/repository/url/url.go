@@ -2,24 +2,26 @@ package url_repository
 
 import (
 	"context"
-	"log"
 	"main/internal/domain/url"
+	"main/pkg/logger"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type URLRepository struct {
-	db *pgxpool.Pool
+	db     *pgxpool.Pool
+	Logger *logger.Logger
 }
 
 func New(db *pgxpool.Pool) *URLRepository {
 	return &URLRepository{
-		db: db,
+		db:     db,
+		Logger: logger.New("url-repository"),
 	}
 }
 
 func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
-	log.Println("Inserting URL into database:", url)
+	u.Logger.Debugf("Inserting URL into database: %+v", url)
 	query := `INSERT INTO urls (id, slug, original_url, expired_at)
           VALUES ($1, $2, $3, $4)`
 
@@ -37,6 +39,7 @@ func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
 }
 
 func (u *URLRepository) GetBySlug(ctx context.Context, slug string) (*url.URL, error) {
+	u.Logger.Debugf("Fetching URL from database with slug: %s", slug)
 	query := `SELECT id, original_url,expired_at
 			  FROM urls
 			  WHERE slug = $1`

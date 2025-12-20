@@ -2,9 +2,9 @@ package url_handler
 
 import (
 	"encoding/json"
-	"log"
 	url_dto "main/internal/dto/url"
 	usecase "main/internal/use-case/url"
+	"main/pkg/logger"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -12,11 +12,13 @@ import (
 
 type URLHandler struct {
 	Usecase *usecase.URLUseCase
+	Logger  *logger.Logger
 }
 
 func New(usecase *usecase.URLUseCase) *URLHandler {
 	return &URLHandler{
 		Usecase: usecase,
+		Logger:  logger.New("url-handler"),
 	}
 }
 
@@ -28,7 +30,7 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Received Create URL request: %+v\n", dto)
+	u.Logger.Debugf("Received Create request: %+v\n", dto)
 
 	err = u.Usecase.Create(dto)
 	if err != nil {
@@ -50,7 +52,7 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		Slug: slug,
 	}
 
-	log.Printf("Received Redirect request for slug: %s\n", slug)
+	u.Logger.Debugf("Received Redirect request for slug: %s", slug)
 
 	url, err := u.Usecase.Redirect(dto)
 	if err != nil {
