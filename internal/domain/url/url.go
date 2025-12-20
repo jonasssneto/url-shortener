@@ -12,9 +12,9 @@ type URL struct {
 	ID          uuid.UUID  `json:"id"`
 	Slug        string     `json:"slug"`
 	OriginalURL string     `json:"original_url"`
-	CreatedAt   int64      `json:"created_at"`
+	CreatedAt   time.Time  `json:"created_at"`
 	ExpiredAt   *time.Time `json:"expired_at"`
-	UpdatedAt   int64      `json:"updated_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 func New(slug, originalURL string, expiredAt *time.Time) (*URL, error) {
@@ -28,8 +28,8 @@ func New(slug, originalURL string, expiredAt *time.Time) (*URL, error) {
 		Slug:        slug,
 		OriginalURL: originalURL,
 		ExpiredAt:   expiredAt,
-		CreatedAt:   time.Now().Unix(),
-		UpdatedAt:   time.Now().Unix(),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}, nil
 }
 
@@ -51,7 +51,7 @@ func validate(slug, originalURL string, expiredAt *time.Time) error {
 }
 
 func (u *URL) IsExpired() bool {
-	if u.ExpiredAt == nil {
+	if u == nil || u.ExpiredAt == nil {
 		return false
 	}
 
