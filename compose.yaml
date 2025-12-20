@@ -11,7 +11,7 @@ services:
       - .volumes/postgres:/var/lib/postgresql/data
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
+    image: otel/opentelemetry-collector-contrib:0.141.0
     command: ["--config", "/etc/otel-collector-config.yaml"]
     volumes:
       - ./.config/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
@@ -20,5 +20,13 @@ services:
       - "4318:4318" # OTLP HTTP
     restart: unless-stopped
 
+  grafana:
+    image: grafana/grafana:12.1
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    restart: unless-stopped
 volumes:
   pgdata:
