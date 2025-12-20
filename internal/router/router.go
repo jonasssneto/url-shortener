@@ -16,6 +16,7 @@ func New(urlHandler *url_handler.URLHandler) http.Handler {
 
 	logger := logger.New("router")
 
+	r.Use(internal_middleware.Metrics())
 	r.Use(internal_middleware.Logger(logger))
 	r.Use(middleware.Recoverer)
 

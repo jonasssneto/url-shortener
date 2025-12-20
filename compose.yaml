@@ -35,6 +35,15 @@ services:
     networks:
       - url-shortener
 
+  prometheus:
+    image: prom/prometheus:v3.8.1
+    volumes:
+      - ./.config/prometheus.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - url-shortener
+
   grafana:
     image: grafana/grafana:12.1
     ports:
