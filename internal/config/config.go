@@ -13,6 +13,10 @@ type Config struct {
 		URI string `envconfig:"POSTGRES_URI" default:"postgres://user:password@localhost:5432/dbname?sslmode=disable"`
 	}
 
+	Otel struct {
+		URL string `envconfig:"OTEL_COLLECTOR_URL" default:"localhost:4317"`
+	}
+
 	Development bool
 }
 

@@ -2,6 +2,7 @@ package trace
 
 import (
 	"context"
+	"main/internal/config"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -15,7 +16,7 @@ func New(module string) func() {
 
 	exporter, err := otlptracegrpc.New(
 		ctx,
-		otlptracegrpc.WithEndpoint(""),
+		otlptracegrpc.WithEndpoint(config.Env.Otel.URL),
 		otlptracegrpc.WithInsecure(),
 	)
 	if err != nil {
