@@ -31,5 +31,4 @@ func main() {
 
 	log.Println("HTTP server running on :8080")
 	http.ListenAndServe(":8080", router)
-
 }
