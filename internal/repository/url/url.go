@@ -53,5 +53,12 @@ func (u *URLRepository) GetBySlug(ctx context.Context, slug string) (*url.URL, e
 		return nil, err
 	}
 
-	return &fetchedURL, nil
+	urlDomain := &url.URL{
+		ID:          fetchedURL.ID,
+		Slug:        slug,
+		OriginalURL: fetchedURL.OriginalURL,
+		ExpiredAt:   fetchedURL.ExpiredAt,
+	}
+
+	return urlDomain, nil
 }

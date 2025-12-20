@@ -2,6 +2,7 @@ package url_usecase
 
 import (
 	"context"
+	"errors"
 	"main/internal/domain/url"
 	url_dto "main/internal/dto/url"
 	repo "main/internal/repository/url"
@@ -32,4 +33,17 @@ func (u *URLUseCase) Create(dto url_dto.CreateURLDTO) error {
 	}
 
 	return nil
+}
+
+func (u *URLUseCase) Redirect(dto url_dto.RedirectURLDTO) (*url.URL, error) {
+	url, err := u.Repository.GetBySlug(context.Background(), dto.Slug)
+	if err != nil {
+		return nil, err
+	}
+
+	if expired := url.IsExpired(); expired {
+		return nil, errors.New("URL has expired")
+	}
+
+	return url, nil
 }

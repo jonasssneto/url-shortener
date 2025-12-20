@@ -3,12 +3,19 @@ package router
 import (
 	url_handler "main/internal/handler/url"
 	"net/http"
+
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
 )
 
 func New(urlHandler *url_handler.URLHandler) http.Handler {
-	mux := http.NewServeMux()
+	r := chi.NewRouter()
 
-	mux.HandleFunc("/url", urlHandler.Create)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
-	return mux
+	r.Post("/url", urlHandler.Create)
+	r.Get("/{slug}", urlHandler.Redirect)
+
+	return r
 }
