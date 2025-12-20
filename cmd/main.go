@@ -8,6 +8,7 @@ import (
 	url_repository "main/internal/repository/url"
 	"main/internal/router"
 	url_usecase "main/internal/use-case/url"
+	"main/pkg/trace"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,6 +29,9 @@ func main() {
 	usecase := url_usecase.New(repo)
 	handler := url_handler.New(usecase)
 	router := router.New(handler)
+
+	shutdown := trace.New("url-shortener")
+	defer shutdown()
 
 	log.Println("HTTP server running on :8080")
 	http.ListenAndServe(":8080", router)

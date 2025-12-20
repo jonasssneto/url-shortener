@@ -8,6 +8,9 @@ import (
 	repo "main/internal/repository/url"
 	"main/pkg/logger"
 	"time"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
 )
 
 type URLUseCase struct {
@@ -22,32 +25,47 @@ func New(repository *repo.URLRepository) *URLUseCase {
 	}
 }
 
-func (u *URLUseCase) Create(dto url_dto.CreateURLDTO) error {
+func (u *URLUseCase) Create(ctx context.Context, dto url_dto.CreateURLDTO) error {
+	tracer := otel.Tracer("url-usecase")
+	ctx, span := tracer.Start(ctx, "create")
+	defer span.End()
+
 	expiredAt := time.Now().Add(48 * time.Hour)
 	u.Logger.Debugf("Creating URL with slug: %s, original URL: %s, expires at: %s", dto.Slug, dto.OriginalURL, expiredAt)
 
 	url, err := url.New(dto.Slug, dto.OriginalURL, &expiredAt)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "invalid url data")
 		return err
 	}
 
-	err = u.Repository.Create(context.Background(), url)
+	err = u.Repository.Create(ctx, url)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "repository create failed")
 		return err
 	}
 
 	return nil
 }
 
-func (u *URLUseCase) Redirect(dto url_dto.RedirectURLDTO) (*url.URL, error) {
+func (u *URLUseCase) Redirect(ctx context.Context, dto url_dto.RedirectURLDTO) (*url.URL, error) {
+	tracer := otel.Tracer("url-usecase")
+	ctx, span := tracer.Start(ctx, "redirect")
+	defer span.End()
+
 	u.Logger.Debugf("Redirecting for slug: %s", dto.Slug)
-	url, err := u.Repository.GetBySlug(context.Background(), dto.Slug)
+	url, err := u.Repository.GetBySlug(ctx, dto.Slug)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "repository get failed")
 		return nil, err
 	}
 
 	if expired := url.IsExpired(); expired {
 		u.Logger.Debugf("URL with slug %s has expired", dto.Slug)
+		span.SetStatus(codes.Error, "url expired")
 		return nil, errors.New("URL has expired")
 	}
 

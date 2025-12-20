@@ -6,6 +6,8 @@ import (
 	"main/pkg/logger"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
 )
 
 type URLRepository struct {
@@ -21,9 +23,13 @@ func New(db *pgxpool.Pool) *URLRepository {
 }
 
 func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
+	tracer := otel.Tracer("url-repository")
+	ctx, span := tracer.Start(ctx, "create-db")
+	defer span.End()
+
 	u.Logger.Debugf("Inserting URL into database: %+v", url)
 	query := `INSERT INTO urls (id, slug, original_url, expired_at)
-          VALUES ($1, $2, $3, $4)`
+		  VALUES ($1, $2, $3, $4)`
 
 	_, err := u.db.Exec(ctx, query,
 		url.ID,
@@ -32,6 +38,8 @@ func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
 		url.ExpiredAt,
 	)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "db exec failed")
 		return err
 	}
 
@@ -39,6 +47,10 @@ func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
 }
 
 func (u *URLRepository) GetBySlug(ctx context.Context, slug string) (*url.URL, error) {
+	tracer := otel.Tracer("url-repository")
+	ctx, span := tracer.Start(ctx, "get-by-slug-db")
+	defer span.End()
+
 	u.Logger.Debugf("Fetching URL from database with slug: %s", slug)
 	query := `SELECT id, original_url,expired_at
 			  FROM urls
@@ -53,6 +65,8 @@ func (u *URLRepository) GetBySlug(ctx context.Context, slug string) (*url.URL, e
 		&fetchedURL.ExpiredAt,
 	)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "db query failed")
 		return nil, err
 	}
 
