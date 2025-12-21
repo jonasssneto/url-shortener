@@ -23,6 +23,12 @@ func Metrics() func(next http.Handler) http.Handler {
 				r.URL.Path,
 				http.StatusText(ww.Status()),
 			).Observe(time.Since(start).Seconds())
+
+			metrics.HttpRequestsTotal.WithLabelValues(
+				r.Method,
+				r.URL.Path,
+				http.StatusText(ww.Status()),
+			).Inc()
 		})
 	}
 }

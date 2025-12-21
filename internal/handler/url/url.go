@@ -3,6 +3,7 @@ package url_handler
 import (
 	"encoding/json"
 	url_dto "main/internal/dto/url"
+	"main/internal/metrics"
 	usecase "main/internal/use-case/url"
 	"main/pkg/logger"
 	"net/http"
@@ -35,6 +36,7 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "failed to decode request body")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		metrics.UrlsCreated.WithLabelValues("error").Inc()
 		return
 	}
 
@@ -45,8 +47,11 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "failed to create URL")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		metrics.UrlsCreated.WithLabelValues("error").Inc()
 		return
 	}
+
+	metrics.UrlsCreated.WithLabelValues("success").Inc()
 
 	w.WriteHeader(http.StatusCreated)
 }
@@ -59,6 +64,7 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
 	if slug == "" {
 		http.NotFound(w, r)
+		metrics.UrlsRedirected.WithLabelValues("error").Inc()
 		return
 	}
 
@@ -73,8 +79,11 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "failed to redirect")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		metrics.UrlsRedirected.WithLabelValues("error").Inc()
 		return
 	}
+
+	metrics.UrlsRedirected.WithLabelValues("success").Inc()
 
 	http.Redirect(w, r, url.OriginalURL, http.StatusFound)
 }
