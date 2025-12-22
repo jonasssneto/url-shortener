@@ -5,6 +5,7 @@ import (
 	url_dto "main/internal/dto/url"
 	"main/internal/metrics"
 	usecase "main/internal/use-case/url"
+	errorhandler "main/internal/utils/error"
 	"main/pkg/logger"
 	"net/http"
 
@@ -36,7 +37,14 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "failed to decode request body")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		errorhandler.JsonError(
+			w,
+			"Erro ao decodificar o corpo da requisição",
+			http.StatusBadRequest,
+			map[string]interface{}{
+				"error": err.Error(),
+			},
+		)
 		metrics.UrlsCreated.WithLabelValues("error").Inc()
 		return
 	}
@@ -52,7 +60,17 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "failed to create URL")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		errorhandler.JsonError(
+			w,
+			"Erro ao criar URL",
+			http.StatusBadRequest,
+			map[string]interface{}{
+				"error": err.Error(),
+				"input": dto,
+			},
+		)
+
 		metrics.UrlsCreated.WithLabelValues("error").Inc()
 		return
 	}
@@ -72,7 +90,14 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 
 	slug := chi.URLParam(r, "slug")
 	if slug == "" {
-		http.NotFound(w, r)
+		errorhandler.JsonError(
+			w,
+			"Slug não informado",
+			http.StatusNotFound,
+			map[string]interface{}{
+				"input": r.URL.String(),
+			},
+		)
 		metrics.UrlsRedirected.WithLabelValues("error").Inc()
 		return
 	}
@@ -91,7 +116,15 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "failed to redirect")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		errorhandler.JsonError(
+			w,
+			"Erro ao redirecionar",
+			http.StatusBadRequest,
+			map[string]interface{}{
+				"error": err.Error(),
+				"input": dto,
+			},
+		)
 		metrics.UrlsRedirected.WithLabelValues("error").Inc()
 		return
 	}
