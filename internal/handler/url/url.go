@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
 
@@ -40,6 +41,11 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	span.SetAttributes(
+		attribute.String("url.original", dto.OriginalURL),
+		attribute.String("url.slug", dto.Slug),
+	)
+
 	u.Logger.Debugf("Received Create request: %+v\n", dto)
 
 	err = u.Usecase.Create(ctx, dto)
@@ -52,6 +58,9 @@ func (u *URLHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metrics.UrlsCreated.WithLabelValues("success").Inc()
+	span.SetAttributes(
+		attribute.Bool("url.created", true),
+	)
 
 	w.WriteHeader(http.StatusCreated)
 }
@@ -67,6 +76,10 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		metrics.UrlsRedirected.WithLabelValues("error").Inc()
 		return
 	}
+
+	span.SetAttributes(
+		attribute.String("url.slug", slug),
+	)
 
 	dto := url_dto.RedirectURLDTO{
 		Slug: slug,
@@ -84,6 +97,10 @@ func (u *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metrics.UrlsRedirected.WithLabelValues("success").Inc()
+	span.SetAttributes(
+		attribute.Bool("redirect.success", true),
+		attribute.String("redirect.target", url.OriginalURL),
+	)
 
 	http.Redirect(w, r, url.OriginalURL, http.StatusFound)
 }
