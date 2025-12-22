@@ -566,7 +566,7 @@
                     "service": "url-shortener"
                 }
             ],
-            "title": "Traces - Redirect",
+            "title": "Traces - Create",
             "type": "table"
         }
     ],
@@ -584,5 +584,5 @@
     "timezone": "browser",
     "title": "URL",
     "uid": "939ffd85-12fd-45c9-ae29-03ddba8e53ac",
-    "version": 8
+    "version": 1
 }
