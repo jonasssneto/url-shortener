@@ -70,7 +70,6 @@ services:
       - ./.config/grafana/provisioning/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./.config/grafana/provisioning/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
       - ./.config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-
     networks:
       - url-shortener
 
