@@ -20,6 +20,11 @@ func New(urlHandler *url_handler.URLHandler) http.Handler {
 	r.Use(internal_middleware.Logger(logger))
 	r.Use(middleware.Recoverer)
 
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"ok"}`))
+	})
+
 	r.Post("/url", urlHandler.Create)
 	r.Get("/{slug}", urlHandler.Redirect)
 
