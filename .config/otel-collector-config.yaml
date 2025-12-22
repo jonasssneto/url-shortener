@@ -19,7 +19,7 @@ extensions:
 exporters:
   prometheus:
     endpoint: 0.0.0.0:9090
-    namespace: testapp 
+    namespace: "url_shortener"
 
   otlp:
     endpoint: jaeger:4317

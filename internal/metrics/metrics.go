@@ -9,7 +9,7 @@ var (
 		prometheus.HistogramOpts{
 			Namespace: "http",
 			Subsystem: "server",
-			Name:      "url_shortener_request_duration_seconds",
+			Name:      "request_duration_seconds",
 			Help:      "HTTP request latency.",
 			Buckets:   prometheus.DefBuckets,
 		},
@@ -20,7 +20,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "http",
 			Subsystem: "server",
-			Name:      "url_shortener_requests_total",
+			Name:      "requests_total",
 			Help:      "Total number of HTTP requests.",
 		},
 		[]string{"method", "path", "status"},
@@ -30,7 +30,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "http",
 			Subsystem: "server",
-			Name:      "url_shortener_urls_redirected_total",
+			Name:      "urls_redirected_total",
 			Help:      "Total number of URLs redirected.",
 		},
 		[]string{"status"},
@@ -40,7 +40,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "http",
 			Subsystem: "server",
-			Name:      "url_shortener_urls_created_total",
+			Name:      "urls_created_total",
 			Help:      "Total number of URLs created.",
 		},
 		[]string{"status"},
