@@ -17,6 +17,10 @@ type Config struct {
 		URL string `envconfig:"OTEL_COLLECTOR_URL" default:"localhost:4317"`
 	}
 
+	Cors struct {
+		AllowedOrigins []string `envconfig:"CORS_ALLOWED_ORIGINS" default:"*"`
+	}
+
 	Development bool
 }
 

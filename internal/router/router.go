@@ -1,6 +1,7 @@
 package router
 
 import (
+	"main/internal/config"
 	url_handler "main/internal/handler/url"
 	"main/pkg/logger"
 	"net/http"
@@ -9,12 +10,19 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 func New(urlHandler *url_handler.URLHandler) http.Handler {
 	r := chi.NewRouter()
 
 	logger := logger.New("router")
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   config.Env.Cors.AllowedOrigins,
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowCredentials: false,
+	}))
 
 	r.Use(internal_middleware.Metrics())
 	r.Use(internal_middleware.Logger(logger))
