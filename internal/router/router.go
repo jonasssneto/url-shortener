@@ -24,6 +24,7 @@ func New(urlHandler *url_handler.URLHandler) http.Handler {
 		AllowCredentials: false,
 	}))
 
+	r.Use(httprate.LimitByIP(50, 1))
 	r.Use(internal_middleware.Metrics())
 	r.Use(internal_middleware.Logger(logger))
 	r.Use(middleware.Recoverer)
