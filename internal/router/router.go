@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httprate"
 )
 
 func New(urlHandler *url_handler.URLHandler) http.Handler {
@@ -35,7 +36,7 @@ func New(urlHandler *url_handler.URLHandler) http.Handler {
 	})
 
 	r.Post("/url", urlHandler.Create)
-	r.Get("/{slug}", urlHandler.Redirect)
+	r.Get("/r/{slug}", urlHandler.Redirect)
 
 	return r
 }
