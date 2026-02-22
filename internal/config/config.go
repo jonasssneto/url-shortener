@@ -21,6 +21,12 @@ type Config struct {
 		AllowedOrigins []string `envconfig:"CORS_ALLOWED_ORIGINS" default:"*"`
 	}
 
+	Redis struct {
+		Address  string `envconfig:"REDIS_ADDRESS" default:"localhost:6379"`
+		Password string `envconfig:"REDIS_PASSWORD" default:""`
+		DB       int    `envconfig:"REDIS_DB" default:"0"`
+	}
+
 	Development bool
 }
 
