@@ -36,7 +36,7 @@ func (u *URLRepository) Create(ctx context.Context, url *url.URL) error {
 	)
 
 	u.Logger.Debugf("Inserting URL into database: %+v", url)
-	query := `INSERT INTO urls (id, slug, original_url, expired_at)
+	query := `INSERT INTO url (id, slug, original_url, expired_at)
 		  VALUES ($1, $2, $3, $4)`
 
 	_, err := u.db.Exec(ctx, query,
@@ -67,7 +67,7 @@ func (u *URLRepository) GetBySlug(ctx context.Context, slug string) (*url.URL, e
 		attribute.String("url.slug", slug),
 	)
 	query := `SELECT id, original_url,expired_at
-			  FROM urls
+			  FROM url
 			  WHERE slug = $1`
 
 	row := u.db.QueryRow(ctx, query, slug)
