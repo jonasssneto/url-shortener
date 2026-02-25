@@ -45,5 +45,6 @@ func main() {
 	defer shutdown()
 
 	log.Println("HTTP server running on :8080")
-	http.ListenAndServe(":8080", router)
+
+	http.ListenAndServe(fmt.Sprintf(":%d", config.Env.Port), router)
 }

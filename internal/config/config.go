@@ -28,6 +28,7 @@ type Config struct {
 	}
 
 	Development bool
+	Port        int `envconfig:"PORT" default:"8080"`
 }
 
 var Env Config
